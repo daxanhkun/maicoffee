@@ -25,7 +25,7 @@ STATIC_DIR = BASE_DIR.joinpath('static')
 SECRET_KEY = 'django-insecure-b%-+dyds$abc=6sm4i2h-&-im-)kr4#weiink1=n#v&3yyb!uy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['https://maicoffee.herokuapp.com/', '127.0.0.1']
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'coffee_shop',
     "tempus_dominus",
-    # 'django_cleanup.apps.CleanupConfig',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -126,7 +126,6 @@ USE_TZ = True
 # Static files (css, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
-
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
