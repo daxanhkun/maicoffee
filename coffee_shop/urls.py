@@ -2,8 +2,8 @@ from collections import namedtuple
 from django.contrib.auth import login
 from django.urls import path
 from django.views.generic.base import TemplateView
-from . import views
-from .models import Order
+from coffee_shop import views
+from coffee_shop.models import Order
 
 app_name = 'coffee_shop'
 urlpatterns = [

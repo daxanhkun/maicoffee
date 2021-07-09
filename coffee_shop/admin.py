@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, OrderProduct, Order, Category, Topping, SubCategory, StaffInfo, Company
+from coffee_shop.models import Product, OrderProduct, Order, Category, Topping, SubCategory, StaffInfo, Company
 # Register your models here.
 admin.site.register(Category)
 admin.site.register(SubCategory)
