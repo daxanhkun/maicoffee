@@ -1,0 +1,65 @@
+{% extends 'manage/base.html' %}
+{% load custom_template %}
+{% block body_block %}
+<div class="container">
+    {% if not order.success %}
+    <a href="{{order.get_mark_success_url}}"><button style="width: 20%;" type="button" class="btn btn-success">Giao thành công - Thoát</button></a>
+    {% else %}
+    <div style="display: flex;">
+        <a style="display: block ;margin-left: auto;" href="{{order.get_delete_url}}"><button  type="button" class="btn btn-danger delete-btn">Hủy đơn</button></a>
+    </div>
+    {% endif %}
+
+    <div class="container-order">
+        <div>
+            <h3>Mã đơn: {{order.pk}}</h3>
+            {% if order.success %}
+            <h4>Tình trạng: Thành công</h4>
+            {% elif order.confirm %}
+            <h4>Tình trạng: Đã nhận</h4>
+            {% else %}
+            <h4>Tình trạng: Đơn mới</h4>
+            {% endif %}
+            <hr>
+        </div>
+        <div>
+            <h6>Khách hàng: {{order.name}} </h6>
+            <h6>Số điện thoại: {{order.phone_number}}</h6>
+            <h6>Địa chỉ giao hàng: {{order.address}}</h6>
+            <hr>
+        </div> 
+        <div>
+            {% for product in order.get_ordered_products %}
+            <h6>-{{product}} {{product.get_price|intcomma}} đ</h6>
+            {% endfor %}
+            <h5>Tổng cộng: {{order.get_total|intcomma}} đ</h5>
+        </div>
+        {% if order.success %}
+        <a href="{% url 'coffee_shop:order_list' %}"><button style="width: 40%;" type="button" class="btn btn-success">Quay lại danh sách đơn hàng</button></a>
+        {% elif order.confirm %}
+        <a href="{{order.get_delete_url}}"><button style=" width: 20% ;" type="button" class="btn btn-danger delete-btn">Hủy đơn</button></a>
+        <a href="{{order.get_mark_success_url}}"><button style="width: 20%;" type="button" class="btn btn-success">Giao thành công</button></a>
+        {% else %}
+        <a href="{{order.get_delete_url}}"><button style=" width: 20% ;" type="button" class="btn btn-danger delete-btn">Hủy đơn</button></a>
+        <a href="{{order.get_mark_confirm_url}}"><button style="width: 20%;" type="button" class="btn btn-primary">Nhận</button></a>
+        {% endif %}
+       
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).ready(function() {
+    $(".delete-btn").on("click", function(event) {
+        if(!confirm("Bạn có chắc muốn xóa đơn này?")) {
+            event.preventDefault();
+        }
+        
+    })
+});
+</script>
+
+{% endblock %}

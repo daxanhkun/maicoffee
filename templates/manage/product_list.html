@@ -1,0 +1,151 @@
+{% extends 'manage/base.html' %}
+{% load static %}
+{% load custom_template %}
+{% block body_block %}
+
+<div class="container">
+    <form action="" method="POST">
+        <input style="display: none;" type="text" name="category" value="{{category}}">
+        {% csrf_token %}
+        <div style="display: flex;">
+            <a href="{% url 'coffee_shop:add_product' %}"><button type="button" class="btn btn-success">Thêm sản phẩm</button></a>
+            <div style="margin-left: 2px;">
+                <button type="button" id="Mybtn" class="btn btn-primary">Thêm loại cụ thể</button>
+                <div class="hidden-form" id="MyForm">
+                    <label>Tên loại:</label>
+                    <input id="input-sub-category" type="text" name="sub_category" placeholder="">
+                    <input id="sub-category-save" style="color: white;" type="submit" class="btn btn-default bg-primary "  value="Thêm"/>
+                </div>
+            </div>
+            <div style="margin-left: 2px;">
+                <button type="button" id="Mybtn-2" class="btn btn-primary">Phân loại cụ thể</button>
+                <div class="hidden-form" id="MyForm-2">
+                    <select name="assigned_sub_category" id="">
+                        {% for sub_category in sub_categories %}
+                          <option value="{{sub_category}}">{{sub_category}}</option>
+                        {% endfor %}
+                    </select>
+                    <input id="assign-sub-category-save" style="color: white;" type="submit" class="btn btn-default bg-primary " value="Lưu" >
+                </div>
+            </div>
+    
+        </div>
+        
+    
+    
+  
+
+        <class class="card text-center">
+            <div class="card-header">
+            <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                    {% if sub_category_name is none %}
+                    <a style="background-color: black; color: white; margin-right: 1px;" class="nav-link cat-btn" href="{% url 'coffee_shop:product_list' %}?category={{category.name}}">Tất cả</a>
+                    {% else %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:product_list' %}?category={{category.name}}">Tất cả</a>
+                    {% endif %}
+                </li>
+                {% for sub_category in sub_categories %}
+                <li class="nav-item">
+                    {% if sub_category.name == sub_category_name %}
+                    <a style="background-color: black; color: white;" class="nav-link cat-btn" href="{% url 'coffee_shop:product_list' %}?sub_category={{sub_category.name}}">{{sub_category}}</a>
+                    {% else %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:product_list' %}?sub_category={{sub_category.name}}">{{sub_category}}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+            <div class="card-body">
+                <table class="order-table">
+                    <th>Mã sản phẩm</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Loại cụ thể</th>
+                    <th>Giá</th>
+                <form action="POST" id="MyForm-3">
+                    {% csrf_token %}
+                {% for product in product_list %}
+                    <tr>
+                        <td><a href="{{product.get_detail_view_url}}">{{product.pk}}</a></td>
+                        <td>{{product.name}}</td>
+                        {% if product.sub_category %}
+                        <td>{{product.sub_category}}</td>
+                        {% else %}
+                        <td>Chưa phân loại</td>
+                        {% endif %}
+                        <td>{{product.price|intcomma}}đ</td>
+                        <td class="handle"  style="border: none;">
+                            <a href="{{product.get_edit_product_detail_url}}"><img style="width: 30px;" src="{% static 'edit-icon.jpg' %}" alt=""></a>
+                            <a class="del-product-btn" href="{{product.get_mark_deleted_url}}"><img style="width: 30px;" src="{% static 'del-icon.jpg' %}" alt=""></a>
+                        </td>
+                        <td class="hidden-radio"><input class="hidden" type="checkbox" name="object_list" value="{{product.pk}}"></td>
+                    </tr>
+                {% endfor %}
+                </form>
+            
+                </table>
+            </div>
+        </class>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </form>
+</div>
+    {% endblock %}
+    
+{% block javascript %}
+<script>
+
+    $(document).ready(function(){
+    $(".hidden-radio").hide();
+
+    $('#Mybtn').click(function(){
+        $('#MyForm').toggle(500);
+    });
+
+    $('#Mybtn-2').click(function(){
+        $('#MyForm-2').toggle(500);
+        $(".hidden-radio").toggle(500);
+        $(".handle").toggle(500)
+
+    });
+
+    $("#assign-sub-category-save").click(function() {
+        $("#input-sub-category").val("")
+    });
+
+    $(".del-product-btn").on("click",function(event) {
+        if(confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
+            $(this).closest('tr').remove();
+        event.preventDefault();
+        $.ajax({
+            url: $(this).attr("href"),
+            success: function(response) {
+            },
+        })
+        }
+        else {
+            event.preventDefault()
+        }
+
+    })
+
+    
+    });
+</script>
+{% endblock %}

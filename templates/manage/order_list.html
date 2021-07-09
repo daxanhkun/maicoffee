@@ -1,0 +1,135 @@
+{% extends 'manage/base.html' %}
+{% load custom_template %}
+{% block body_block %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="container">
+        <span>Tổng doanh thu đơn online hôm nay: {{total_income_today|intcomma}}đ / {{orders_len}} đơn</span>
+        <div>
+            <button type="button" id="Mybtn-2" class="btn btn-primary">Chọn hàng loạt</button>
+            <div class="hidden-form" id="MyForm-2">
+                <select name="status" id="">
+                    <option value="confirmed">Đã nhận</option>
+                    <option value="success">Thành công</option>
+                    <option value="delete">Xóa đơn</option>
+                </select>
+                <input id="assign-sub-category-save" style="color: white;" type="submit" class="btn btn-default bg-primary " value="Lưu" >
+            </div>
+        </div>
+        <class class="card text-center">
+            <div class="card-header">
+              <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                    <a class="nav-link " href="{% url 'coffee_shop:order_list' %}"><button type="button" class="btn btn-secondary">Tất cả</button></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link " href="{% url 'coffee_shop:unconfirmed_order_list' %}"><button type="button" class="btn btn-warning">Đơn mới</button></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'coffee_shop:confirmed_order_list' %}"><button type="button" class="btn btn-primary">Đã nhận</button></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'coffee_shop:success_order_list' %}"><button type="button" class="btn btn-success">Thành công</button></a>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body">
+                <table class="order-table">
+                    <th>Mã đơn</th>
+                    <th>Tên người đặt hàng</th>
+                    <th>Số điện thoại</th>
+                    <th>Địa chỉ giao hàng</th>
+                    <th>Tổng cộng</th>
+                    <th>Tình trạng</th>
+                
+                {% for order in order_list %}
+                    <tr>
+                        <td><a href="{{order.get_detail_view_url}}">{{order.pk}}</a></td>
+                        <td>{{order.name}}</td>
+                        <td>{{order.phone_number}}</td>
+                        <td>{{order.address}}</td>
+                        <td>{{order.get_total|intcomma}} ₫</td>
+                        {% if order.success %}
+                        <td style="color: rgb(25, 135, 84);"><strong>Thành công</strong></td>
+                        {% elif order.confirm %}
+                        <td><strong style="color: rgb(13, 110, 253);">Đã nhận</strong></td>
+                        {% else %}
+                        <td style="color: rgb(255, 193, 7);"><strong id="status-{{order.pk}}">Đơn mới</strong></td>
+                        {% endif %}
+                        {% if order.confirm == False %}
+                        <td id="{{order.pk}}" style="border: none;">
+                            <button url="{{order.get_mark_confirm_url}}" status="status-{{order.pk}}" container="{{order.pk}}" type="button" class="btn btn-primary confirm-btn">Nhận</button>
+                            <button url="{{order.get_delete_url}}" type="button" class="btn btn-danger cancel-btn">Hủy</button>    
+                        </td>
+                        {% endif %}
+                        <td class="hidden-radio"><input class="hidden" type="checkbox" name="object_list" value="{{order.pk}}"></td>
+    
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+          </class>
+    
+          <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</form>
+
+    {% endblock %}
+    
+
+
+{% block javascript %}
+<script>
+    $(document).ready(function() {
+        $(".hidden-radio").hide()
+        $('#Mybtn-2').click(function(){
+            $('#MyForm-2').toggle(500);
+            $(".hidden-radio").toggle(500);
+            $(".handle").toggle(500)
+        });
+
+
+        $(".confirm-btn").on("click", function(event) {
+            var status_id = "#" + $(this).attr("status");
+            var container_id = "#" + $(this).attr("container");
+            $(status_id).text("Đã nhận");
+            $(status_id).css("color", "rgb(13, 110, 253)")
+            $(container_id).hide();
+            
+            event.preventDefault()
+            $.ajax({
+                url: $(this).attr("url"),
+                success: function() {
+                }
+            })
+        });
+
+        $(".cancel-btn").on("click", function(event) {
+            if(confirm("Bạn có chắc muốn xóa đơn này?")) {
+                $(this).closest("tr").remove();
+                $.ajax({
+                    url: $(this).attr("url"),
+                });
+
+            }
+        });
+
+    });
+</script>
+{% endblock %}

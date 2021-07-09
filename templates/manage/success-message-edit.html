@@ -1,0 +1,20 @@
+{% extends "manage/base.html" %}
+{% block body_block %}
+    <form method="POST">
+        {% csrf_token %}
+        <label for="title">Tiêu đề</label>
+        <input id="title" name="title" type="text" class="form-control">
+        <label for="description">Lời nhắn</label>
+        <textarea id="message" class="form-control" name="message" id="" cols="50" rows="10"></textarea>
+        <button style="margin-top: 1%" class="btn btn-success">Lưu</button>
+    </form>
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+    $("#title").val("{{company.success_order_title}}")
+    $("#message").val("{{company.success_order_message}}")
+</script>
+{% endblock %}

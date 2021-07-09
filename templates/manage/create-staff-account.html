@@ -1,0 +1,25 @@
+{% extends 'manage/base.html' %}
+{% block body_block %}
+<div class="container">
+    <div class="jumbotron">
+      {% if registered %}
+        <h1>Tạo thành công</h1>
+      {% else %}
+
+        <h3>Tạo tài khoản nhân sự</h3>
+
+        <form enctype="multipart/form-data" method="POST">
+          {% csrf_token %}
+          {{ staff_form.as_p }}
+          {{ staff_info_form.as_p }}
+          <ul class="form-text text-muted small"><li>Không bắt buộc.</li></ul>'
+          <input class="btn btn-success" type="submit" name="" value="Đăng ký">
+        </form>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}

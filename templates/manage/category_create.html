@@ -1,0 +1,17 @@
+{% extends 'manage/base.html' %}
+
+<!-- body block -->
+{% block body_block %}
+<br>
+<br>
+<br>
+<div class="container">
+    <h1>Thêm loại:</h1>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <a href="{% url 'coffee_shop:product_list' %}"><button type="submit" class="btn btn-success btn-primary">Lưu</button></a>
+    </form>
+</div>
+
+{% endblock %}

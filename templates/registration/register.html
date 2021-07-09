@@ -1,0 +1,24 @@
+{% extends 'coffee_shop/base.html' %}
+{% block bodyblock %}
+<div class="container">
+    <br>
+    <br>
+    <br>
+    <div class="jumbotron">
+  
+      <h2>Đăng ký: </h2>
+      <h3>(Chỉ dành cho chủ cửa hàng)</h3>
+      {% if form.errors %}
+          <p>Tài khoản hoặc mật khẩu không chính xác</p>
+      {% endif %}
+  
+      <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+          {{form.as_p}}
+  
+          <input type="submit" class='btn btn-primary' value="Đăng nhập" />
+  <!--         <input type="hidden" name="next" value="{{ next }}" />-->
+      </form>
+    </div>
+  </div>
+{% endblock %}

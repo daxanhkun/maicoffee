@@ -1,0 +1,117 @@
+{% extends 'coffee_shop/base.html' %}
+{% load custom_template %}
+{% block body_block %}
+<div style="background-color: white;">
+    {% if order %}
+    <div class="cart-container">
+
+        <div style="margin: auto; margin-top: 2%;">
+            <h1><strong>GIỎ HÀNG CỦA BẠN</strong></h1>
+        </div>
+        <div style="display: flex; justify-content: space-around; margin-top: 1%;">
+            <div  class="cart-item">
+                {% if order %}
+                {% for order_product in order.get_ordered_products %}
+                <div id="{{order_product.pk}}" class="card-item" >
+                    <div style="display: flex;">
+                        <h2 ><strong>{{order_product.get_original_name}}</strong></h2>
+                        <button container-id="{{order_product.pk}}" url="{{order_product.get_remove_from_cart_url}}"  type="button" class="btn-close close-btn" aria-label="Close"></button>
+                    </div>
+
+                        {% if order_product.get_topping_list %}
+                        <ul>
+                            {% for topping in order_product.get_topping_list %}
+                            <li>{{topping}}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <hr>
+                        <div style="display: flex;">
+                              <button url="{{order_product.get_reduce_from_cart_url}}" price="price-{{order_product.pk}}" quantity="quantity-{{order_product.pk}}" class="button plus-minus-btn" type="button">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                              </button>
+                                <h3 style="margin: 1%;"><strong id="quantity-{{order_product.pk}}">{{order_product.quantity}}</strong></h3>
+                              <button url="{{order_product.get_increase_from_cart_url}}" price="price-{{order_product.pk}}" quantity="quantity-{{order_product.pk}}" class="button plus-minus-btn" type="button">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                              </button>
+                              <h4  style="margin-left: auto; margin-top: auto;"><strong id="price-{{order_product.pk}}">{{order_product.get_price|intcomma}}đ</strong></h4>
+                        </div>
+
+                </div>                    
+                {% endfor %}
+                 {% endif %}
+            </div>
+            <div class="form-group" style="flex-basis: 35%;">
+                <div style="display: flex;">
+                    <h6><strong>{{order.get_all_items_quantity}} Món</strong></h6>
+                    <h6 style="margin-left: auto;"><strong id="total-order">{{order.get_total|intcomma}}đ</strong></h6>
+                </div>
+                <hr>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <input id="check-out" type="submit" class='btn btn-danger btn-primary' value="Đặt hàng" />
+                </form>
+            </div> 
+        </div>
+    </div>
+    {% else %}
+    <div style="text-align:center; background:white; padding: 10%" class="container">
+        <h1>Bạn không thể đặt hàng với giỏ hàng trống !</h1>
+        <a style="color: black;" href="{% url 'coffee_shop:products' %}"><Strong>Quay lại trang sản phẩm</Strong></a>
+    </div>
+    {% endif %}
+    
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).ready(function() {
+    $(".button").on('click', function(event) {
+        var quantity_id = "#" + $(this).attr("quantity");
+        var price_id = "#" + $(this).attr("price");
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("url"),
+            success: function(response) {
+                var price = JSON.parse(response["price"]);
+                var quantity = JSON.parse(response["quantity"]);
+                var total_price = JSON.parse(response["total_price"]);
+                var difference = JSON.parse(response["difference"]);
+                price = commafy(price) + "đ";
+                total_price = commafy(total_price) + "đ"
+                $(price_id).text(price);
+                $(quantity_id).text(quantity);
+                $("#total_price").text(total_price);
+                $("#total-order").text(total_price);
+                item_count = Number($("#item_count").attr("data-count")) + difference;
+                $("#item_count").attr("data-count", item_count)
+
+            },
+        });
+    })
+    $(".close-btn").on('click', function(event) {
+        event.preventDefault();
+        var container_id = "#" + $(this).attr("container-id");
+        $(container_id).hide();
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("url"),
+            success: function(response) {
+                var total_price = JSON.parse(response["total_price"]);
+                var quantity = JSON.parse(response["quantity"]);
+                total_price = commafy(total_price) + "đ";
+                $("#total_price").text(total_price);
+                $("#total-order").text(total_price);
+                item_count = Number($("#item_count").attr("data-count")) - quantity;
+                $("#item_count").attr("data-count", item_count);
+            },
+        });
+
+    })
+});
+</script>
+{% endblock %}

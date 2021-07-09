@@ -1,0 +1,17 @@
+{% extends 'manage/base.html' %}
+
+<!-- body block -->
+{% block body_block %}
+<br>
+<br>
+<br>
+<div class="container">
+    <h1>Thêm sản phẩm:</h1>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="btn btn-success btn-primary">Lưu</button>
+    </form>
+</div>
+
+{% endblock %}

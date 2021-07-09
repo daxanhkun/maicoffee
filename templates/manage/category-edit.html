@@ -1,0 +1,20 @@
+{% extends 'manage/base.html'%}
+{% block body_block %}
+<div class="container">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label style="margin: 5px;">Tên loại:</label>
+        <input class="form-control" type="text" name="rename_category"><br>
+        <button type="submit" class="btn btn-success btn-primary">Lưu</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $('input[name=name]').val('{{product.name}}');
+    $('#description').val('{{product.description}}');
+    $('input[name=price]').val('{{product.price}}')
+</script>
+{% endblock %}

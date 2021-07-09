@@ -1,0 +1,104 @@
+{% load static %}
+{% load custom_template %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <!-- Latest compiled and minified css -->
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+    <!-- Tempus Dominus Bootstrap 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
+
+ {# Custom CSS#}
+ 
+  <link rel="stylesheet" href="{% static 'css/manage.css' %}">
+  
+   <!-- Alternative to Bootstrap 3 Glyphicons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>Coffee Shop</title>
+</head>
+<body>
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </form>
+        <class style="margin-top: 1%;" class="card text-center">
+            <div class="card-header">
+            <ul class="nav nav-\pills card-header-pills">
+                <li class="nav-item">
+                    {% if filter_range or request.method == "POST" %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}">Tổng </a>
+                    {% else %}
+                    <a style="background-color:black; color: white;" class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}">Tổng </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if filter_range == "week" and request.method != "POST" %}
+                    <a style="background: black; color:white" class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=week">Tuần</a>
+                    {% else %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=week">Tuần</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if filter_range == "month" and request.method != "POST" %}
+                    <a style="background-color: black; color:white;" class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=month">Tháng</a>
+                    {% else %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=month">Tháng</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if filter_range == "year" and request.method != "POST" %}
+                    <a style="background:black; color: white;" class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=year">Năm</a>
+                    {% else  %}
+                    <a class="nav-link cat-btn" href="{% url 'coffee_shop:sales' %}?filter_range=year">Năm</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    
+                </li>
+            </ul>
+            </div>
+            <div class="card-body">
+                <h5>Doanh thu: {{company.sales|intcomma}}đ</h5>
+                <h5>Tổng số đơn: {{company.orders}}</h5>
+                <div style="text-align: left;">
+                    <h6>Bao gồm:</h6>
+                    <table>
+                        <th>Loại</th>
+                        <th>Doanh thu</th>
+                        {% for category in category_list %}
+                        <tr>
+                            <td>{{category}}</td>
+                            <td>{{category.sales|intcomma}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </class>
+    </div>
+     
+    
+  
+
+  <!-- Java script source -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  {% block javascript %}
+  {% endblock javascript %}
+
+
+</body>
+</html>

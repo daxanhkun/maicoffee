@@ -1,0 +1,48 @@
+{% extends 'manage/base.html'%}
+{% block body_block %}
+<div class="container">
+    *<span>Lưu ý:</span>
+    không chọn ảnh nếu không cần thay đổi, một số ký tự đặc biệt "" và * có thể bị thay đổi trong giao diện này, hãy kiểm tra lại trước khi lưu
+    <hr>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label style="margin: 5px;">Tên sản phẩm:</label>
+        <input class="form-control" type="text" name="name"><br>
+        <label style="margin: 5px;">Loại:</label>
+        <select class="form-control" name="category">
+            <option value="{{product.category}}">{{product.category}}</option>
+            {% for category in category_list %}
+            {% if category != product.category %}
+            <option value="{{category}}">{{category}}</option>
+            {% endif %}
+            {% endfor %}
+        </select><br>
+        <label style="margin: 5px;">Loại cụ thể:</label>
+        <select class="form-control" name="sub_category">
+            <option value="{{product.sub_category}}">{{product.sub_category}}</option>
+            {% for sub_category in sub_categories %}
+            {% if sub_category != product.sub_category %}
+            <option value="{{sub_category}}">{{sub_category}}</option>
+            {% endif %}
+            {% endfor %}
+        </select><br>
+        <label style="margin: 5px;">Mô tả:</label>
+        <textarea class="form-control" name="description" id="description" cols="50" rows="10"></textarea><br>
+        <label style="margin: 5px;">Giá:</label>
+        <input class="form-control" type="number" name="price" ><br>
+        <label style="margin: 5px;">Ảnh hiện tại:</label>
+        <img style="margin: 5px;" src="{{product.image.url}}" alt=""><br>
+        <div style="margin: 5px;">{{form.as_p}} </div>
+        <button type="submit" class="btn btn-success btn-primary">Lưu</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $('input[name=name]').val('{{product.name}}');
+    $('#description').val('{{product.description}}');
+    $('input[name=price]').val('{{product.price}}')
+</script>
+{% endblock %}

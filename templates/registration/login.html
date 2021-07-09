@@ -1,0 +1,30 @@
+{% extends 'coffee_shop/base.html' %}
+
+
+{% block body_block %}
+<div style="display: flex;" class="container">
+  <div style="margin: auto; padding: 10%; background-color: white;">
+    <h2>Đăng nhập: </h2>
+    <h3>(Chỉ dành cho nhân sự)</h3>
+    {% if form.errors %}
+    <ul>
+      <li>
+        <p>Tài khoản hoặc mật khẩu không chính xác</p>
+      </li>
+
+    </ul>
+
+    {% endif %}
+
+    <form method="POST">
+    {% csrf_token %}
+      <label for="username">Tài khoản:</label>
+      {{form.username}} <br>
+      <label for="password">Mật khẩu</label>
+      {{form.password}} <br>
+        <input type="submit" class='btn btn-primary' value="Đăng nhập" />
+    </form>
+  </div>
+</div>
+ 
+{% endblock %}

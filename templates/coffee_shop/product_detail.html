@@ -1,0 +1,154 @@
+{% extends 'coffee_shop/base.html' %}
+{% load static %}
+{% load custom_template %}
+
+{% block body_block %}
+<!-- {% if user.is_superuser %}
+<form action="" method="POST">
+ 
+  <div style="display: flex;">
+    <div class="" id="myForm">
+        <button type="button" id="Mybtn" class="btn btn-primary">Thêm topping</button>
+        <div id="MyForm">
+          <input type="text" name="description" placeholder="trân châu"><br>
+          <label>Giá:</label>
+        <input type="number" name="price" placeholder="2000"/><br>
+          <input style="color: white;" type="submit" class="btn btn-default bg-primary " name="submit" value="Thêm"/>
+        </div>
+      </div>
+</div>
+
+{% endif %} -->
+<form id="post-form" method="POST">
+{% csrf_token %}
+<a href="{% url 'coffee_shop:product_list' %}?category={{product.category}}"><button type="button" class="btn btn-dark">Quay lại danh sách sản phẩm</button></a>
+<button type="button" class="btn btn-success">Thêm topping cho sản phẩm này</button>
+  <div class="product-detail-grid">
+    
+    <div class="description-detail">
+        <div style="margin: 2%;">
+            <h1>{{product.name}}</h1>
+            <h5 style="color: rgb(156, 156, 156)"; >{{product.description}}</h5>
+            {% if topping_list %}
+            <div class="option-box"><strong>Thêm topping</strong></div>
+            <div style="display: flex; flex-direction: column;">
+              {% for topping in topping_list %}
+              <label for="">
+                  <input id="{{topping.price}}" class="option-input radio" type="checkbox" name="object_list" value="{{topping.pk}}">
+                  <strong>Thêm {{topping}}(+{{topping.price}}đ)</strong>
+              </label>
+            {% endfor %}
+            </div>
+           
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-detail"">
+        <div class="" style="width: 100%%;">
+            <img class="card-img-top" src="{{product.image.url}}" alt="Card image cap">
+            <div style="margin: 10px;">
+                <h5>{{product.name}}</h5>
+            </div>
+            <div class="card-body">
+              <hr>
+              <div style="display: flex;">
+                <button id="minus" class="plus-minus-btn" type="button">
+                  <i class="fa fa-minus" aria-hidden="true"></i>
+                </button>
+                  <h3 id="product_count" style="margin: 1%;"><strong>1</strong></h3>
+                <button id="plus" class="plus-minus-btn" type="button">
+                  <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <h5 class="bundle_price" style="margin-left: auto;">{{product.price|intcomma}}đ</h5>
+              </div>
+                
+              <hr>
+              <div style="display: flex;">
+                <h6>Tổng cộng</h6>
+                <h5 class="bundle_price" style="margin-left: auto;">{{product.price|intcomma}}đ</h5>
+              </div>
+              
+              <button id="add-to-cart-btn" style="width: 90%; margin: 10px;" class="btn button btn-danger add_product"><h5>Thêm vào giỏ hàng</h5></button>
+              <a href="{% url 'coffee_shop:index' %}"><button style="width: 90%; margin: 10px; border: solid black 1px;" type="button" class="btn btn-light"><h5> Quay lại thực đơn</h5></button></a>
+            </div>
+          </div>
+    </div>
+</div>
+<input style="display: none;" type="number" name="demand_quantity" id="demand_quantity" value="1">
+</form>
+
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+</script>
+<script>
+    product_count = 1;
+    var topping_total = 0;
+    var selected = [];
+
+    $(":checkbox").on("change",function() {
+      //change input #topping_total value according check/uncheck checkboxes
+      var sum = 0
+      $(":checkbox:checked").each(function(){
+        sum += parseInt($(this).attr('id'))
+      })
+      topping_total = sum
+      bundle_price = commafy(product_count * ({{product.price}} +topping_total))
+      bundle_price += "đ"
+      $(".bundle_price").text(bundle_price);
+    })
+    
+
+    $("#plus").click(function() {
+        product_count += 1;
+        bundle_price = commafy(product_count * ({{product.price}} +topping_total))
+        bundle_price += "đ"
+        $(".bundle_price").text(bundle_price);
+        $("#product_count").text(String(product_count));
+    });
+    $("#minus").click(function() {
+        if(product_count == 1) {
+            return
+        }
+        else {
+          product_count -= 1;
+          bundle_price = commafy(product_count * ({{product.price}} + topping_total))
+          bundle_price += "đ"
+          $(".bundle_price").text(bundle_price);
+          $("#product_count").text(String(product_count));
+        }
+    });
+    var selected = [];
+
+    $("#post-form").on("submit", function(event){
+      event.preventDefault();
+      $("#demand_quantity").val(product_count );
+      serialized_data = $(this).serialize();
+      $.ajax({
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},    
+      type: "POST",
+      url: "{{product.get_detail_view.url}}",
+      data: $(this).serialize(),
+      success: function(response) {
+        total_price = JSON.parse(response["total_price"]);
+        total_price = commafy(total_price) + "đ";
+        temp_product_name = JSON.stringify(response["product_name"]);
+        product = ""
+        for(var i=0; i<temp_product_name.length; i++) {
+          if(temp_product_name[i] != '"')
+            product += temp_product_name[i];
+        }
+        document.getElementById("total_price").textContent = total_price;
+        document.getElementById("popup-message").textContent = "Bạn đã thêm x" + String(product_count) + " " + product + " vào giỏ hàng" ;
+        item_count = Number($("#item_count").attr("data-count")) + product_count;
+        $("#item_count").attr("data-count", item_count)
+      },
+
+    });
+    });
+
+</script>
+{% endblock javascript %}
