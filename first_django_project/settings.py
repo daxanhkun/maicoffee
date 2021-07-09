@@ -25,9 +25,9 @@ STATIC_DIR = BASE_DIR.joinpath('static')
 SECRET_KEY = 'django-insecure-b%-+dyds$abc=6sm4i2h-&-im-)kr4#weiink1=n#v&3yyb!uy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://maicoffee.herokuapp.com/', '127.0.0.1']
 
 
 # Application definition
